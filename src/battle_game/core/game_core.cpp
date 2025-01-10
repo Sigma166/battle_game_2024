@@ -129,6 +129,11 @@ uint32_t GameCore::GetRenderPerspective() const {
 }
 
 void GameCore::ProcessEventQueue() {
+  for (auto &unit : GetUnits()) {
+    if (unit.second->immune_count_down_) {
+      unit.second->immune_count_down_--;
+    }
+  }
   while (!event_queue_.empty()) {
     event_queue_.front()();
     event_queue_.pop();
@@ -220,7 +225,7 @@ void GameCore::PushEventDealDamage(uint32_t dst_unit_id,
                                    float damage) {
   event_queue_.emplace([=]() {
     auto unit = GetUnit(dst_unit_id);
-    if (unit) {
+    if (unit && !unit->immune_count_down_) {
       unit->SetHealth(unit->GetHealth() - damage / unit->GetMaxHealth());
       if (unit->GetHealth() <= 0.0f) {
         PushEventKillUnit(dst_unit_id, src_unit_id);

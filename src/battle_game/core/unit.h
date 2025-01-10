@@ -93,6 +93,9 @@ class Unit : public Object {
 
  private:
   float fadeout_health_;
+
+ public:
+  uint32_t immune_count_down_{180};
 };
 
 }  // namespace battle_game
